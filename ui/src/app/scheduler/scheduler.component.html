@@ -1,0 +1,69 @@
+<div class="container">
+  <h2 class="mt-4 mb-4">Scheduled Downloads</h2>
+
+  <div class="card mb-4">
+    <div class="card-body">
+      <h5 class="card-title">Add New Schedule</h5>
+      <form (ngSubmit)="addSchedule()">
+        <div class="mb-3">
+          <label for="url" class="form-label">URL</label>
+          <input type="text" class="form-control" id="url" [(ngModel)]="newSchedule.url" name="url" required>
+        </div>
+        <div class="mb-3">
+          <label for="cron" class="form-label">Cron Schedule</label>
+          <input type="text" class="form-control" id="cron" [(ngModel)]="newSchedule.cron" name="cron" required>
+        </div>
+        <div class="mb-3">
+          <label for="folder" class="form-label">Folder</label>
+          <input type="text" class="form-control" id="folder" [(ngModel)]="newSchedule.folder" name="folder">
+        </div>
+        <button type="submit" class="btn btn-primary">
+          <fa-icon [icon]="faPlus"></fa-icon> Add Schedule
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>URL</th>
+        <th>Cron Schedule</th>
+        <th>Folder</th>
+        <th>Last Run</th>
+        <th>Next Run</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let schedule of schedules">
+        <td>{{ schedule.url }}</td>
+        <td>
+          <span *ngIf="editingSchedule?.id !== schedule.id">{{ schedule.cron }}</span>
+          <input *ngIf="editingSchedule?.id === schedule.id" type="text" class="form-control"
+            [(ngModel)]="editingSchedule.cron">
+        </td>
+        <td>{{ schedule.folder }}</td>
+        <td>{{ schedule.last_run | date:'medium' }}</td>
+        <td>{{ schedule.next_run | date:'medium' }}</td>
+        <td>
+          <button *ngIf="editingSchedule?.id !== schedule.id" class="btn btn-sm btn-primary me-2"
+            (click)="startEdit(schedule)">
+            <fa-icon [icon]="faEdit"></fa-icon>
+          </button>
+          <button *ngIf="editingSchedule?.id === schedule.id" class="btn btn-sm btn-success me-2"
+            (click)="updateSchedule()">
+            Save
+          </button>
+          <button *ngIf="editingSchedule?.id === schedule.id" class="btn btn-sm btn-secondary me-2"
+            (click)="cancelEdit()">
+            Cancel
+          </button>
+          <button class="btn btn-sm btn-danger" (click)="removeSchedule(schedule.id)">
+            <fa-icon [icon]="faTrashAlt"></fa-icon>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
