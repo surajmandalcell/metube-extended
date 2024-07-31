@@ -9,7 +9,7 @@ import logging
 import json
 import pathlib
 
-from app.scheduler import scheduler
+from scheduler import scheduler
 from ytdl import DownloadQueueNotifier, DownloadQueue
 
 log = logging.getLogger("main")

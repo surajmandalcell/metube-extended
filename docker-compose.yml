@@ -4,6 +4,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        CACHEBUST: ${CACHEBUST:-1}
     restart: unless-stopped
     ports:
       - "8081:8081"
