@@ -29,11 +29,9 @@
               "src/manifest.webmanifest",
               "src/custom-service-worker.js"
             ],
-            "styles": [
-              "src/styles.sass"
-            ],
+            "styles": ["src/styles.sass"],
             "scripts": [
-              "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js",
+              "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
             ],
             "serviceWorker": true,
             "ngswConfigPath": "ngsw-config.json"
@@ -65,6 +63,14 @@
                   "maximumError": "10kb"
                 }
               ]
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           }
         },
@@ -76,8 +82,12 @@
           "configurations": {
             "production": {
               "buildTarget": "metube:build:production"
+            },
+            "development": {
+              "buildTarget": "metube:build:development"
             }
-          }
+          },
+          "defaultConfiguration": "development"
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
@@ -98,9 +108,7 @@
               "src/manifest.webmanifest",
               "src/custom-service-worker.js"
             ],
-            "styles": [
-              "src/styles.sass"
-            ],
+            "styles": ["src/styles.sass"],
             "scripts": []
           }
         },
@@ -112,9 +120,7 @@
               "tsconfig.spec.json",
               "e2e/tsconfig.json"
             ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "exclude": ["**/node_modules/**"]
           }
         },
         "e2e": {
