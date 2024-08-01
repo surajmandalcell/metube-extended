@@ -73,14 +73,11 @@ class ObjectSerializer(json.JSONEncoder):
             return json.JSONEncoder.default(self, obj)
 
 
-def scheduler(app, config):
+def create_scheduler(config):
     serializer = ObjectSerializer()
-    download_queue = DownloadQueue(
-        config, None
-    )  # You might need to adjust this based on your actual DownloadQueue initialization
+    download_queue = DownloadQueue(config, None)
     scheduler_queue = SchedulerQueue(config, download_queue)
 
-    @app.router.add_post(config.URL_PREFIX + "scheduler/add")
     async def add_schedule(request):
         post = await request.json()
         url = post.get("url")
@@ -91,7 +88,6 @@ def scheduler(app, config):
         schedule = await scheduler_queue.add_schedule(url, cron, folder)
         return web.Response(text=serializer.encode(schedule))
 
-    @app.router.add_post(config.URL_PREFIX + "scheduler/update")
     async def update_schedules(request):
         post = await request.json()
         ids = post.get("ids")
@@ -101,7 +97,6 @@ def scheduler(app, config):
         status = await scheduler_queue.update_schedules(ids, new_cron)
         return web.Response(text=serializer.encode(status))
 
-    @app.router.add_post(config.URL_PREFIX + "scheduler/remove")
     async def remove_schedules(request):
         post = await request.json()
         ids = post.get("ids")
@@ -110,9 +105,28 @@ def scheduler(app, config):
         status = await scheduler_queue.remove_schedules(ids)
         return web.Response(text=serializer.encode(status))
 
-    @app.router.add_get(config.URL_PREFIX + "scheduler/list")
     async def list_schedules(request):
         schedules = scheduler_queue.get_schedules()
         return web.Response(text=serializer.encode(schedules))
+
+    return {
+        "add_schedule": add_schedule,
+        "update_schedules": update_schedules,
+        "remove_schedules": remove_schedules,
+        "list_schedules": list_schedules,
+    }
+
+
+def scheduler(app, config):
+    routes = create_scheduler(config)
+
+    app.router.add_post(config.URL_PREFIX + "scheduler/add", routes["add_schedule"])
+    app.router.add_post(
+        config.URL_PREFIX + "scheduler/update", routes["update_schedules"]
+    )
+    app.router.add_post(
+        config.URL_PREFIX + "scheduler/remove", routes["remove_schedules"]
+    )
+    app.router.add_get(config.URL_PREFIX + "scheduler/list", routes["list_schedules"])
 
     return app
