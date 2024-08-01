@@ -8,6 +8,7 @@ import socketio
 import logging
 import json
 import pathlib
+import platform
 
 from scheduler import scheduler
 from ytdl import DownloadQueueNotifier, DownloadQueue
@@ -277,4 +278,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
     scheduler(app, config)
     log.info(f"Listening on {config.HOST}:{config.PORT}")
-    web.run_app(app, host=config.HOST, port=int(config.PORT), reuse_port=True)
+    if platform.system() != "Windows":
+        web.run_app(app, host=config.HOST, port=int(config.PORT), reuse_port=True)
+    else:
+        web.run_app(app, host=config.HOST, port=int(config.PORT))
