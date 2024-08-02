@@ -28,7 +28,7 @@ export interface Download {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DownloadsService {
   loading = true;
@@ -44,11 +44,12 @@ export class DownloadsService {
   constructor(private http: HttpClient, private socket: MeTubeSocket) {
     socket.fromEvent('all').subscribe((strdata: string) => {
       this.loading = false;
-      let data: [[[string, Download]], [[string, Download]]] = JSON.parse(strdata);
+      let data: [[[string, Download]], [[string, Download]]] =
+        JSON.parse(strdata);
       this.queue.clear();
-      data[0].forEach(entry => this.queue.set(...entry));
+      data[0].forEach((entry) => this.queue.set(...entry));
       this.done.clear();
-      data[1].forEach(entry => this.done.set(...entry));
+      data[1].forEach((entry) => this.done.set(...entry));
       this.queueChanged.next(null);
       this.doneChanged.next(null);
     });
@@ -83,40 +84,68 @@ export class DownloadsService {
     });
     socket.fromEvent('configuration').subscribe((strdata: string) => {
       let data = JSON.parse(strdata);
-      console.debug("got configuration:", data);
+      console.debug('got configuration:', data);
       this.configuration = data;
     });
     socket.fromEvent('custom_dirs').subscribe((strdata: string) => {
       let data = JSON.parse(strdata);
-      console.debug("got custom_dirs:", data);
+      console.debug('got custom_dirs:', data);
       this.customDirs = data;
       this.customDirsChanged.next(data);
     });
   }
 
   handleHTTPError(error: HttpErrorResponse) {
-    var msg = error.error instanceof ErrorEvent ? error.error.message : error.error;
-    return of({status: 'error', msg: msg})
+    var msg =
+      error.error instanceof ErrorEvent ? error.error.message : error.error;
+    return of({ status: 'error', msg: msg });
   }
 
-  public add(url: string, quality: string, format: string, folder: string, customNamePrefix: string, autoStart: boolean) {
-    return this.http.post<Status>('add', {url: url, quality: quality, format: format, folder: folder, custom_name_prefix: customNamePrefix, auto_start: autoStart}).pipe(
-      catchError(this.handleHTTPError)
-    );
+  public add(
+    url: string,
+    quality: string,
+    format: string,
+    folder: string,
+    customNamePrefix: string,
+    autoStart: boolean
+  ) {
+    return this.http
+      .post<Status>('add', {
+        url: url,
+        quality: quality,
+        format: format,
+        folder: folder,
+        custom_name_prefix: customNamePrefix,
+        auto_start: autoStart,
+      })
+      .pipe(catchError(this.handleHTTPError));
   }
 
   public startById(ids: string[]) {
-    return this.http.post('start', {ids: ids});
+    return this.http.post('start', { ids: ids });
   }
 
   public delById(where: string, ids: string[]) {
-    ids.forEach(id => this[where].get(id).deleting = true);
-    return this.http.post('delete', {where: where, ids: ids});
+    ids.forEach((id) => (this[where].get(id).deleting = true));
+    return this.http.post('delete', { where: where, ids: ids });
   }
 
   public delByFilter(where: string, filter: (dl: Download) => boolean) {
     let ids: string[] = [];
-    this[where].forEach((dl: Download) => { if (filter(dl)) ids.push(dl.url) });
+    this[where].forEach((dl: Download) => {
+      if (filter(dl)) ids.push(dl.url);
+    });
     return this.delById(where, ids);
+  }
+
+  public isAudioType(quality: string, format: string): boolean {
+    return (
+      quality === 'audio' ||
+      format === 'mp3' ||
+      format === 'm4a' ||
+      format === 'opus' ||
+      format === 'wav' ||
+      format === 'flac'
+    );
   }
 }
