@@ -3,47 +3,81 @@
 
   <div class="card mb-4">
     <div class="card-body">
-      <h5 class="card-title">Add New Schedule</h5>
       <form (ngSubmit)="addSchedule()">
-        <div class="mb-3">
-          <label for="url" class="form-label">URL</label>
-          <input type="text" class="form-control" id="url" [(ngModel)]="newSchedule.url" name="url" required>
+        <div>
+          <input
+            type="text"
+            class="form-control"
+            id="url"
+            [(ngModel)]="newSchedule.url"
+            name="url"
+            placeholder="Video or playlist URL"
+            required
+          />
         </div>
 
-        <div class="mb-3">
-          <label for="cronSchedule" class="form-label">Cron Schedule</label>
-          <select class="form-select" id="cronSchedule" [(ngModel)]="selectedInterval" name="cronSchedule">
-            <option *ngFor="let interval of cronIntervals" [value]="interval.value">{{interval.label}}</option>
-          </select>
-        </div>
-<div class="mb-3" *ngIf="selectedInterval === 'custom'">
-  <label for="customCron" class="form-label">Custom Cron Schedule</label>
-  <input type="text" class="form-control" id="customCron" [(ngModel)]="customCron" name="customCron"
-    placeholder="* * * * *">
-</div>
-
-        <div class="mb-3">
-          <label for="format" class="form-label">Format</label>
-          <select class="form-select" id="format" [(ngModel)]="format" (ngModelChange)="formatChanged()" name="format">
-            <option *ngFor="let f of formats" [value]="f.id">{{f.text}}</option>
-          </select>
+        <div class="cron-schedule-input">
+          <div class="input-group">
+            <span class="input-group-text">Cron Schedule</span>
+            <select
+              class="form-control"
+              id="cronSchedule"
+              [(ngModel)]="selectedInterval"
+              name="cronSchedule"
+            >
+              <option
+                *ngFor="let interval of cronIntervals"
+                [value]="interval.value"
+              >
+                {{ interval.label }}
+              </option>
+            </select>
+          </div>
+          <div class="input-group" *ngIf="selectedInterval === 'custom'">
+            <span class="input-group-text">Custom Cron Schedule</span>
+            <input
+              type="text"
+              class="form-control"
+              id="customCron"
+              [(ngModel)]="customCron"
+              name="customCron"
+              placeholder="* * * * *"
+            />
           </div>
 
-          <div class="mb-3">
-            <label for="quality" class="form-label">Quality</label>
-            <select class="form-select" id="quality" [(ngModel)]="quality" (ngModelChange)="qualityChanged()" name="quality">
-              <option *ngFor="let q of qualities" [value]="q.id">{{q.text}}</option>
+
+          <div class="input-group">
+            <span class="input-group-text">Quality</span>
+            <select
+              class="form-select"
+              id="quality"
+              [(ngModel)]="quality"
+              (ngModelChange)="qualityChanged()"
+              name="quality"
+            >
+              <option *ngFor="let q of qualities" [value]="q.id">
+                {{ q.text }}
+              </option>
             </select>
           </div>
 
-          <div class="mb-3" *ngIf="showAdvanced()">
-          <label for="folder" class="form-label">Folder</label>
-          <select class="form-select" id="folder" [(ngModel)]="newSchedule.folder" name="folder">
-            <option value="">Default</option>
-            <option *ngFor="let dir of customDirs$ | async" [value]="dir">{{dir}}</option>
-          </select>
+          <div class="input-group">
+            <span class="input-group-text">Format</span>
+            <select
+              class="form-select"
+              id="format"
+              [(ngModel)]="format"
+              (ngModelChange)="formatChanged()"
+              name="format"
+            >
+              <option *ngFor="let f of formats" [value]="f.id">
+                {{ f.text }}
+              </option>
+            </select>
+          </div>
         </div>
-<button type="submit" class="btn btn-primary">Add Schedule</button>
+
+        <button type="submit" class="btn btn-primary">Add Schedule</button>
       </form>
     </div>
   </div>
@@ -62,34 +96,68 @@
       </thead>
       <tbody>
         <tr *ngFor="let schedule of schedules">
-          <td>{{schedule.url}}</td>
+          <td>{{ schedule.url }}</td>
           <td>
-            <span *ngIf="editingSchedule?.id !== schedule.id">{{schedule.cron}}</span>
-            <select *ngIf="editingSchedule?.id === schedule.id" class="form-select" [(ngModel)]="selectedInterval">
-              <option *ngFor="let interval of cronIntervals" [value]="interval.value">{{interval.label}}</option>
+            <span *ngIf="editingSchedule?.id !== schedule.id">{{
+              schedule.cron
+            }}</span>
+            <select
+              *ngIf="editingSchedule?.id === schedule.id"
+              class="form-select"
+              [(ngModel)]="selectedInterval"
+            >
+              <option
+                *ngFor="let interval of cronIntervals"
+                [value]="interval.value"
+              >
+                {{ interval.label }}
+              </option>
             </select>
-            <input *ngIf="editingSchedule?.id === schedule.id && selectedInterval === 'custom'" type="text"
-              class="form-control mt-2" [(ngModel)]="customCron" placeholder="* * * * *">
-            </td>
-          <td>{{schedule.folder}}</td>
-          <td>{{schedule.last_run | date:'medium'}}</td>
-          <td>{{schedule.next_run | date:'medium'}}</td>
+            <input
+              *ngIf="
+                editingSchedule?.id === schedule.id &&
+                selectedInterval === 'custom'
+              "
+              type="text"
+              class="form-control mt-2"
+              [(ngModel)]="customCron"
+              placeholder="* * * * *"
+            />
+          </td>
+          <td>{{ schedule.folder }}</td>
+          <td>{{ schedule.last_run | date : "medium" }}</td>
+          <td>{{ schedule.next_run | date : "medium" }}</td>
           <td>
-            <button *ngIf="editingSchedule?.id !== schedule.id" class="btn btn-sm btn-primary me-2" (click)="startEdit(schedule)">
+            <button
+              *ngIf="editingSchedule?.id !== schedule.id"
+              class="btn btn-sm btn-primary me-2"
+              (click)="startEdit(schedule)"
+            >
               <fa-icon [icon]="faEdit"></fa-icon> Edit
             </button>
-            <button *ngIf="editingSchedule?.id === schedule.id" class="btn btn-sm btn-success me-2" (click)="updateSchedule()">
+            <button
+              *ngIf="editingSchedule?.id === schedule.id"
+              class="btn btn-sm btn-success me-2"
+              (click)="updateSchedule()"
+            >
               Save
             </button>
-            <button *ngIf="editingSchedule?.id === schedule.id" class="btn btn-sm btn-secondary me-2" (click)="cancelEdit()">
+            <button
+              *ngIf="editingSchedule?.id === schedule.id"
+              class="btn btn-sm btn-secondary me-2"
+              (click)="cancelEdit()"
+            >
               Cancel
             </button>
-            <button class="btn btn-sm btn-danger" (click)="removeSchedule(schedule.id)">
+            <button
+              class="btn btn-sm btn-danger"
+              (click)="removeSchedule(schedule.id)"
+            >
               <fa-icon [icon]="faTrashAlt"></fa-icon> Delete
-              </button>
-              </td>
-              </tr>
-              </tbody>
-              </table>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </div>

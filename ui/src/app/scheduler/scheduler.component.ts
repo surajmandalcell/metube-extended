@@ -212,14 +212,7 @@ export class SchedulerComponent implements OnInit, OnDestroy {
   }
 
   isAudioType() {
-    return (
-      this.quality == 'audio' ||
-      this.format == 'mp3' ||
-      this.format == 'm4a' ||
-      this.format == 'opus' ||
-      this.format == 'wav' ||
-      this.format == 'flac'
-    );
+   return this.downloads.isAudioType(this.quality, this.format);
   }
 
   showAdvanced() {
